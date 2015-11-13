@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <math.h>
 #include "SAT.h"
-#include <stdio.h>
 #include <unistd.h>
 #define MAXLENGTH 5000000 
 struct node{
@@ -72,7 +71,7 @@ int main(){
 	unsigned long maxl=MAXLENGTH;
 	name = (char *)malloc(maxl * sizeof(char));
 	int **cor;
-	cor=(char**)malloc(1 * sizeof(int*));
+	cor=(int**)malloc(1 * sizeof(int*));
 	int nume = 0;
 	int all = 0;
 	int start;
@@ -124,7 +123,7 @@ int main(){
 			if (cor != NULL){	
 				free(cor);
 			}
-			cor = malloc(1 * sizeof(int*));
+			cor = (int **)malloc(1 * sizeof(int*));
 			if(first!=NULL&&first->child!=NULL){
 				freechildnode(first->child);
 			}
@@ -149,8 +148,8 @@ int main(){
 
 				if (name[i] == ',' && name[i - 1] != '>'){
 					pointer = 1;
-					cor = realloc(cor, (alloc + 1)*sizeof(int*));
-					cor[alloc++] = malloc(2 * sizeof(int));
+					cor = (int **)realloc(cor, (alloc + 1)*sizeof(int*));
+					cor[alloc++] = (int*)malloc(2 * sizeof(int));
 					cor[nume][0] = getint(x);
 					if (cor[nume][0]<0 || cor[nume][0] >= all){
 						fprintf(stdout, "Error: Wrong point\n");
@@ -174,7 +173,7 @@ int main(){
 						fault = 1;
 						break;
 					}
-					struct node *anode = malloc(sizeof(struct node));
+					struct node *anode = (struct node *)malloc(sizeof(struct node));
 					anode->index = cor[nume][0];
 					anode->key = 999999;
 					anode->next = NULL;
@@ -183,7 +182,7 @@ int main(){
 					int same = 0;
 					if (tf == NULL){
 						first = anode;
-						struct node *sc = malloc(sizeof(struct node));
+						struct node *sc = (struct node *)malloc(sizeof(struct node));
 						sc->next = NULL;
 						sc->child = NULL;
 						sc->index = cor[nume][1];
@@ -196,7 +195,7 @@ int main(){
 							if (tf->index == anode->index){
 								struct node *s2 = findindex(tf->next, cor[nume][1]);
 								if (s2 == NULL){
-									struct node *ss2 = malloc(sizeof(struct node));
+									struct node *ss2 = (struct node *)malloc(sizeof(struct node));
 									ss2->next = NULL;
 									ss2->child = NULL;
 									ss2->key = 999999;
@@ -215,7 +214,7 @@ int main(){
 					if (same == 0){
 						anode->child = first;
 						first = anode;
-						struct node *s3 = malloc(sizeof(struct node));
+						struct node *s3 = (struct node*)malloc(sizeof(struct node));
 						s3->next = NULL;
 						s3->child = NULL;
 						s3->key = 999999;
@@ -223,7 +222,7 @@ int main(){
 						first->next = s3;
 					}
 
-					struct node *anode2=malloc(sizeof(struct node));
+					struct node *anode2=(struct node*)malloc(sizeof(struct node));
 					anode2->index = cor[nume][1];
 					anode2->key = 999999;
 					anode2->child = NULL;
@@ -234,7 +233,7 @@ int main(){
 						if (tf2->index == anode2->index){
 							struct node *s4 = findindex(tf2->next, cor[nume][0]);
 							if (s4 == NULL){
-								struct node *ss4 = malloc(sizeof(struct node));
+								struct node *ss4 = (struct node*)malloc(sizeof(struct node));
 								ss4->next = NULL;
 								ss4->child = NULL;
 								ss4->key = 999999;
@@ -252,7 +251,7 @@ int main(){
 					if (same2 == 0){
 						anode2->child = first;
 						first = anode2;
-						struct node *s5 = malloc(sizeof(struct node));
+						struct node *s5 = (struct node*)malloc(sizeof(struct node));
 						s5->child = NULL;
 						s5->next= NULL;
 						s5->key = 999999;
@@ -287,12 +286,13 @@ int main(){
 		    dup2(p[1], STDOUT_FILENO);
 		    int j,l,count;
 		    //all=0  all=1??
+		    int k;
 		    for(i=1;i<=all;i++){
 		    	k=i;
 		    	SAT_Manager mgr = SAT_InitManager();
    				SAT_SetNumVariables(mgr, all*k);
    				int *c;
-   				c=malloc(sizeof(int)*(i*(all+1)));
+   				c=(int *)malloc(sizeof(int)*(i*(all+1)));
    				for(j=1;j<=k;j++){
    					count=0;
    					for(l=1;l<=all;l++){
@@ -326,7 +326,7 @@ int main(){
 				struct node *hnext = first;
 				struct node *h = first;
 				int *c3;
-				c3=malloc(sizeof(int)*2*k);
+				c3=(int *)malloc(sizeof(int)*2*k);
 				while(h!=NULL){
 					hnext=h->next;
 					while(hnext!=NULL){
