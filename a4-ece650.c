@@ -67,6 +67,8 @@ void freechildnode(struct node *f){
 	}
 }
 int main(){
+	fprintf(stdout, "fuck1\n");
+	fprintf(stdout, "fuck2\n");
 	char *name=NULL;
 	unsigned long maxl=MAXLENGTH;
 	name = (char *)malloc(maxl * sizeof(char));
@@ -280,27 +282,38 @@ int main(){
 
 
 
-			int p[2], bak;
-		    pipe(p);
-		    bak = dup(STDOUT_FILENO);
-		    dup2(p[1], STDOUT_FILENO);
+			// int p[2], bak;
+		 //   pipe(p);
+		 //    bak = dup(STDOUT_FILENO);
+		 //   dup2(p[1], STDOUT_FILENO);
 		    int j,l,count;
+		    int result;
 		    //all=0  all=1??
 		    int k;
+		    //fprintf(stdout,"all:%d\n",all);
+		    //fflush(stdout);
+		    fprintf(stdout,"hehe1\n");
 		    for(i=1;i<=all;i++){
+		    	//fprintf(stdout,"i:%d\n",i);
+		    	//fflush(stdout);
 		    	k=i;
 		    	SAT_Manager mgr = SAT_InitManager();
    				SAT_SetNumVariables(mgr, all*k);
    				int *c;
+   				fprintf(stdout,"hehe2\n");
    				c=(int *)malloc(sizeof(int)*(i*(all+1)));
    				for(j=1;j<=k;j++){
    					count=0;
    					for(l=1;l<=all;l++){
    						c[count++]=((((l-1)*k)+j)<<1);
+   						//fprintf(stdout,"%d^", c[count-1]);
+   						//fflush(stdout);
    					}
    					SAT_AddClause(mgr, c, count);
+   					//fprintf(stdout,"\n");
+   					//fflush(stdout);
    				}
-   				free(c);
+   				fprintf(stdout,"hehe3\n");
    				int p,q;
    				int c2[2];
    				for(j=1;j<=all;j++){	
@@ -309,19 +322,29 @@ int main(){
    						for(p=1;p<q;p++){
    							c2[0]=((((j-1)*k)+p)<<1)+1;
    							c2[1]=((((j-1)*k)+q)<<1)+1;
+   							//fprintf(stdout,"%d^%d", c[0],c[1]);
+   							SAT_AddClause(mgr, c2, 2);
+   							//fprintf(stdout,"\n");
+   							//fflush(stdout);
    						}
-   						SAT_AddClause(mgr, c2, 2);
+   						
    					}
    				}
+   				fprintf(stdout,"hehe4\n");
    				for(j=1;j<=k;j++){
    					for(q=2;q<=all;q++){
    						for(p=1;p<q;p++){
    							c2[0]=(((p-1)*k+j)<<1)+1;
    							c2[1]=(((q-1)*k+j)<<1)+1;
+   							//fprintf(stdout,"%d^%d", c2[0],c2[1]);
    							SAT_AddClause(mgr, c2, 2);
+   							//fprintf(stdout,"\n");
+   							//fflush(stdout);
    						}
+   						
    					}
    				}
+   				fprintf(stdout,"hehe5\n");
    				struct node *head = first;
 				struct node *hnext = first;
 				struct node *h = first;
@@ -333,27 +356,34 @@ int main(){
 						//hnext=hnext->next;
 						count=0;
 						for(j=1;j<=k;j++){
-							c3[count++]=(((h->index)*k+j)<<1)+1;
-							c3[count++]=(((hnext->index)*k+j)<<1)+1;
-							SAT_AddClause(mgr, c3, 2*k);
+							//fprintf(stdout,"%d----%d:", h->index,hnext->index);
+							c3[count++]=(((h->index)*k+j)<<1);
+							c3[count++]=(((hnext->index)*k+j)<<1);	
+							//fprintf(stdout,"%d^%d\n", c3[count-2],c3[count-1]);	
+							//fflush(stdout);
 						}
+						//printf("\n");
+						//fflush(stdout);
+						SAT_AddClause(mgr, c3, 2*k);
 						hnext=hnext->next;
 					}
 					h=h->child;
 				}
-				free(c3);
-				int result = SAT_Solve(mgr);
-			    dup2(bak, STDOUT_FILENO);
+				fprintf(stdout,"hehe6\n");
+				//dup2(bak, STDOUT_FILENO);
+				
+				result = SAT_Solve(mgr);
+			    
+			    fprintf(stdout,"hehe9\n");
 			    if(result == SATISFIABLE) {
-					printf("sat: "); fflush(stdout);
 					int nn = SAT_NumVariables(mgr);
-					//int i;
 					int pre=-1;
+					fprintf(stdout,"hehe7\n");
 					for(i = 1; i <= nn; i++) {
 					    int a = SAT_GetVarAsgnment(mgr, i);
 					    if(a == 1) {
 					    	if(pre!=-1){
-					    		fprintf(stdout,"%d ", pre-1); fflush(stdout);
+					    		fprintf(stdout,"%d ", (pre-1)/k); fflush(stdout);
 					    	}
 						 	pre=i;
 					    }
@@ -361,20 +391,23 @@ int main(){
 							continue;
 				    	}
 				   		else {
-							fprintf(stderr,"Error!"); fflush(stdout);
+							fprintf(stderr,"Error: zchaff error!"); fflush(stdout);
 				    	}
 					}
-					fprintf(stdout,"%d ", pre-1); fflush(stdout);
-					fprintf(stdout,"\n"); 
+					fprintf(stdout,"%d\n", (pre-1)/k);
+					fflush(stdout);
 					break;
 			    }
 			    else {
 					continue;
 			    }
+			    free(c3);
+			    free(c);
 
 		    }
 
 
 		}
+		memset(name,0,maxl * sizeof(char));
 	}
 }
