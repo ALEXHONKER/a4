@@ -12,7 +12,10 @@ struct node{
 	struct node *child;//next child
 	struct node *next; //next node
 };
-
+int cmpfunc (const void * a, const void * b)
+{
+   return ( *(int*)a - *(int*)b );
+}
 int getint(char *s){
 	int i = 0;
 	int p = 1;
@@ -67,8 +70,6 @@ void freechildnode(struct node *f){
 	}
 }
 int main(){
-	fprintf(stdout, "fuck1\n");
-	fprintf(stdout, "fuck2\n");
 	char *name=NULL;
 	unsigned long maxl=MAXLENGTH;
 	name = (char *)malloc(maxl * sizeof(char));
@@ -108,6 +109,7 @@ int main(){
 
 			if (num == 0 && fau == 0){
 				fprintf(stdout, "Error: wrong V\n");
+				fflush(stdout);
 				continue;
 			}
 			else{
@@ -279,131 +281,124 @@ int main(){
 			}
 			if (fault == 1) continue;
 			index = 2;
-
-
-
-			// int p[2], bak;
-		 //   pipe(p);
-		 //    bak = dup(STDOUT_FILENO);
-		 //   dup2(p[1], STDOUT_FILENO);
+			int p[2], bak;
+		  	pipe(p);
+		    bak = dup(STDOUT_FILENO);
+		   	dup2(p[1], STDOUT_FILENO);
 		    int j,l,count;
 		    int result;
-		    //all=0  all=1??
 		    int k;
-		    //fprintf(stdout,"all:%d\n",all);
-		    //fflush(stdout);
-		    fprintf(stdout,"hehe1\n");
-		    for(i=1;i<=all;i++){
-		    	//fprintf(stdout,"i:%d\n",i);
-		    	//fflush(stdout);
+		    int numn=0;
+			struct node *se = first;
+			int *hash2=(int *)malloc(sizeof(int)*(all+1));
+			while(se!=NULL){
+				numn++;
+				se=se->child;
+			}
+			int *num=(int *)malloc(sizeof(int)*(numn+1));
+			se=first;
+			int cc=1;
+			while(se!=NULL){
+				num[cc++]=se->index;
+				se=se->child;
+			}
+			for(i=1;i<=numn;i++){
+				hash2[num[i]]=i;
+			}
+		    for(i=1;i<=numn;i++){
 		    	k=i;
 		    	SAT_Manager mgr = SAT_InitManager();
-   				SAT_SetNumVariables(mgr, all*k);
+   				SAT_SetNumVariables(mgr, numn*k);
    				int *c;
-   				fprintf(stdout,"hehe2\n");
-   				c=(int *)malloc(sizeof(int)*(i*(all+1)));
+   				c=(int *)malloc(sizeof(int)*(i*(numn+1)));
    				for(j=1;j<=k;j++){
    					count=0;
-   					for(l=1;l<=all;l++){
+   					for(l=1;l<=numn;l++){
    						c[count++]=((((l-1)*k)+j)<<1);
-   						//fprintf(stdout,"%d^", c[count-1]);
-   						//fflush(stdout);
    					}
    					SAT_AddClause(mgr, c, count);
-   					//fprintf(stdout,"\n");
-   					//fflush(stdout);
    				}
-   				fprintf(stdout,"hehe3\n");
    				int p,q;
    				int c2[2];
-   				for(j=1;j<=all;j++){	
-   					
-   					for(q=2;q<=k;q++){
-   						for(p=1;p<q;p++){
-   							c2[0]=((((j-1)*k)+p)<<1)+1;
-   							c2[1]=((((j-1)*k)+q)<<1)+1;
-   							//fprintf(stdout,"%d^%d", c[0],c[1]);
-   							SAT_AddClause(mgr, c2, 2);
-   							//fprintf(stdout,"\n");
-   							//fflush(stdout);
-   						}
+   				for(j=1;j<=numn;j++){	
+   					//if(hash[j]==1){
+   						for(q=2;q<=k;q++){
+	   						for(p=1;p<q;p++){
+	   							c2[0]=((((j-1)*k)+p)<<1)+1;
+	   							c2[1]=((((j-1)*k)+q)<<1)+1;
+	   							SAT_AddClause(mgr, c2, 2);
+	   						}
    						
-   					}
+   						}
    				}
-   				fprintf(stdout,"hehe4\n");
+   				fprintf(stdout,"\n");fflush(stdout);
    				for(j=1;j<=k;j++){
-   					for(q=2;q<=all;q++){
+   					for(q=2;q<=numn;q++){
    						for(p=1;p<q;p++){
-   							c2[0]=(((p-1)*k+j)<<1)+1;
-   							c2[1]=(((q-1)*k+j)<<1)+1;
-   							//fprintf(stdout,"%d^%d", c2[0],c2[1]);
-   							SAT_AddClause(mgr, c2, 2);
-   							//fprintf(stdout,"\n");
-   							//fflush(stdout);
+   								c2[0]=(((p-1)*k+j)<<1)+1;
+	   							c2[1]=(((q-1)*k+j)<<1)+1;
+	   							SAT_AddClause(mgr, c2, 2);
    						}
    						
    					}
    				}
-   				fprintf(stdout,"hehe5\n");
    				struct node *head = first;
 				struct node *hnext = first;
 				struct node *h = first;
+				
+				
 				int *c3;
 				c3=(int *)malloc(sizeof(int)*2*k);
 				while(h!=NULL){
 					hnext=h->next;
 					while(hnext!=NULL){
-						//hnext=hnext->next;
 						count=0;
 						for(j=1;j<=k;j++){
-							//fprintf(stdout,"%d----%d:", h->index,hnext->index);
-							c3[count++]=(((h->index)*k+j)<<1);
-							c3[count++]=(((hnext->index)*k+j)<<1);	
-							//fprintf(stdout,"%d^%d\n", c3[count-2],c3[count-1]);	
-							//fflush(stdout);
+							c3[count++]=(((hash2[h->index]-1)*k+j)<<1);
+							c3[count++]=(((hash2[hnext->index]-1)*k+j)<<1);	
 						}
-						//printf("\n");
-						//fflush(stdout);
 						SAT_AddClause(mgr, c3, 2*k);
 						hnext=hnext->next;
 					}
 					h=h->child;
 				}
-				fprintf(stdout,"hehe6\n");
-				//dup2(bak, STDOUT_FILENO);
 				
 				result = SAT_Solve(mgr);
-			    
-			    fprintf(stdout,"hehe9\n");
+			    int ck=0;
 			    if(result == SATISFIABLE) {
+			    	int *res=(int *)malloc(sizeof(int)*(numn+1));
 					int nn = SAT_NumVariables(mgr);
 					int pre=-1;
-					fprintf(stdout,"hehe7\n");
-					for(i = 1; i <= nn; i++) {
-					    int a = SAT_GetVarAsgnment(mgr, i);
-					    if(a == 1) {
-					    	if(pre!=-1){
-					    		fprintf(stdout,"%d ", (pre-1)/k); fflush(stdout);
-					    	}
-						 	pre=i;
-					    }
-					   	else if(a == 0) {
-							continue;
-				    	}
-				   		else {
-							fprintf(stderr,"Error: zchaff error!"); fflush(stdout);
-				    	}
+					dup2(bak, STDOUT_FILENO);
+					for(i=1;i<=numn;i++){
+						int coun=0;
+						for(coun=1;coun<=k;coun++){
+							int a = SAT_GetVarAsgnment(mgr, (i-1)*k+coun);
+							if(a==1){
+								res[ck++]=num[i];
+								break;
+							}else if(a==0){
+								continue;
+							}else{
+								fprintf(stderr,"Error: zchaff error!"); fflush(stdout);
+							}
+						}
+						
 					}
-					fprintf(stdout,"%d\n", (pre-1)/k);
-					fflush(stdout);
+					qsort(res, ck, sizeof(int), cmpfunc);
+					for(i=0;i<ck-1;i++){
+						fprintf(stdout,"%d ", res[i]); fflush(stdout);
+					}
+					fprintf(stdout, "%d\n",res[ck-1]);fflush(stdout);
 					break;
+					free(res);
 			    }
 			    else {
 					continue;
 			    }
 			    free(c3);
 			    free(c);
-
+			    free(hash2);
 		    }
 
 
