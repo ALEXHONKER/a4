@@ -28,6 +28,7 @@ static void pclock(char *msg,clockid_t cid){
 	printf("%s ",msg);
 	if(clock_gettime(cid,&ts)!=-1){
 		printf("%4ld.%03ld\n", ts.tv_sec, ts.tv_nsec / 1000000);
+		fflush(stdout);
 	}
 }
 int cmpfunc (const void * a, const void * b)
@@ -490,6 +491,8 @@ void* approx2(void * argu){
 		if(head==NULL) {
 			res[0]=cres;
 			arg->s=res;
+			int ts=pthread_getcpuclockid(pthread_self(),cid);
+							arg->cid=cid;
 			return 	NULL;
 		}
 			
