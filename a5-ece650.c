@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <pthread.h>
-//#include "SAT.h"
+#include "SAT.h"
 #include <unistd.h>
 #define MAXLENGTH 5000000 
 struct node{
@@ -80,130 +80,133 @@ void freechildnode(struct node *f){
 		if(f!=NULL) free(f);
 	}
 }
-// void* a4(void* argu){	
-// 	struct argua4 *arg=(struct argua4*) argu;
-// 	struct ndoe *first=argu->fir;
-// 	int all=argu->all;
-// 	int p[2], bak;
-//   	pipe(p);
-//     bak = dup(STDOUT_FILENO);
-//    	dup2(p[1], STDOUT_FILENO);
-//     int j,l,count;
-//     int result;
-//     int k;
-//     int numn=0;
-// 	struct node *se = first;
-// 	int *hash2=(int *)malloc(sizeof(int)*(all+1));
-// 	while(se!=NULL){
-// 		numn++;
-// 		se=se->child;
-// 	}
-// 	int *num=(int *)malloc(sizeof(int)*(numn+1));
-// 	se=first;
-// 	int cc=1;
-// 	while(se!=NULL){
-// 		num[cc++]=se->index;
-// 		se=se->child;
-// 	}
-// 	for(i=1;i<=numn;i++){
-// 		hash2[num[i]]=i;
-// 	}
-//     for(i=1;i<=numn;i++){
-//     	k=i;
-//     	SAT_Manager mgr = SAT_InitManager();
-// 			SAT_SetNumVariables(mgr, numn*k);
-// 			int *c;
-// 			c=(int *)malloc(sizeof(int)*(i*(numn+1)));
-// 			for(j=1;j<=k;j++){
-// 				count=0;
-// 				for(l=1;l<=numn;l++){
-// 					c[count++]=((((l-1)*k)+j)<<1);
-// 				}
-// 				SAT_AddClause(mgr, c, count);
-// 			}
-// 			int p,q;
-// 			int c2[2];
-// 			for(j=1;j<=numn;j++){	
-// 				//if(hash[j]==1){
-// 					for(q=2;q<=k;q++){
-// 						for(p=1;p<q;p++){
-// 							c2[0]=((((j-1)*k)+p)<<1)+1;
-// 							c2[1]=((((j-1)*k)+q)<<1)+1;
-// 							SAT_AddClause(mgr, c2, 2);
-// 						}
+void* a4(void* argu){	
+	struct argua4 *arg=(struct argua4*) argu;
+	struct node *first=arg->fir;
+	int all=arg->all;
+	int p[2], bak;
+  	pipe(p);
+    bak = dup(STDOUT_FILENO);
+   	dup2(p[1], STDOUT_FILENO);
+    int j,l,count;
+    int result;
+    int k;
+    int numn=0;
+	struct node *se = first;
+	int *hash2=(int *)malloc(sizeof(int)*(all+1));
+	while(se!=NULL){
+		numn++;
+		se=se->child;
+	}
+	int *num=(int *)malloc(sizeof(int)*(numn+1));
+	se=first;
+	int cc=1;
+	while(se!=NULL){
+		num[cc++]=se->index;
+		se=se->child;
+	}
+	int i=0;
+	for(i=1;i<=numn;i++){
+		hash2[num[i]]=i;
+	}
+    for(i=1;i<=numn;i++){
+    	k=i;
+    	SAT_Manager mgr = SAT_InitManager();
+			SAT_SetNumVariables(mgr, numn*k);
+			int *c;
+			c=(int *)malloc(sizeof(int)*(i*(numn+1)));
+			for(j=1;j<=k;j++){
+				count=0;
+				for(l=1;l<=numn;l++){
+					c[count++]=((((l-1)*k)+j)<<1);
+				}
+				SAT_AddClause(mgr, c, count);
+			}
+			int p,q;
+			int c2[2];
+			for(j=1;j<=numn;j++){	
+				//if(hash[j]==1){
+					for(q=2;q<=k;q++){
+						for(p=1;p<q;p++){
+							c2[0]=((((j-1)*k)+p)<<1)+1;
+							c2[1]=((((j-1)*k)+q)<<1)+1;
+							SAT_AddClause(mgr, c2, 2);
+						}
 					
-// 					}
-// 			}
-// 			fprintf(stdout,"\n");fflush(stdout);
-// 			for(j=1;j<=k;j++){
-// 				for(q=2;q<=numn;q++){
-// 					for(p=1;p<q;p++){
-// 							c2[0]=(((p-1)*k+j)<<1)+1;
-// 							c2[1]=(((q-1)*k+j)<<1)+1;
-// 							SAT_AddClause(mgr, c2, 2);
-// 					}
+					}
+			}
+			fprintf(stdout,"\n");fflush(stdout);
+			for(j=1;j<=k;j++){
+				for(q=2;q<=numn;q++){
+					for(p=1;p<q;p++){
+							c2[0]=(((p-1)*k+j)<<1)+1;
+							c2[1]=(((q-1)*k+j)<<1)+1;
+							SAT_AddClause(mgr, c2, 2);
+					}
 					
-// 				}
-// 			}
-// 			struct node *head = first;
-// 		struct node *hnext = first;
-// 		struct node *h = first;
+				}
+			}
+			struct node *head = first;
+		struct node *hnext = first;
+		struct node *h = first;
 		
 		
-// 		int *c3;
-// 		c3=(int *)malloc(sizeof(int)*2*k);
-// 		while(h!=NULL){
-// 			hnext=h->next;
-// 			while(hnext!=NULL){
-// 				count=0;
-// 				for(j=1;j<=k;j++){
-// 					c3[count++]=(((hash2[h->index]-1)*k+j)<<1);
-// 					c3[count++]=(((hash2[hnext->index]-1)*k+j)<<1);	
-// 				}
-// 				SAT_AddClause(mgr, c3, 2*k);
-// 				hnext=hnext->next;
-// 			}
-// 			h=h->child;
-// 		}
+		int *c3;
+		c3=(int *)malloc(sizeof(int)*2*k);
+		while(h!=NULL){
+			hnext=h->next;
+			while(hnext!=NULL){
+				count=0;
+				for(j=1;j<=k;j++){
+					c3[count++]=(((hash2[h->index]-1)*k+j)<<1);
+					c3[count++]=(((hash2[hnext->index]-1)*k+j)<<1);	
+				}
+				SAT_AddClause(mgr, c3, 2*k);
+				hnext=hnext->next;
+			}
+			h=h->child;
+		}
 		
-// 		result = SAT_Solve(mgr);
-// 	    int ck=0;
-// 	    if(result == SATISFIABLE) {
-// 	    	int *res=(int *)malloc(sizeof(int)*(numn+1));
-// 			int nn = SAT_NumVariables(mgr);
-// 			int pre=-1;
-// 			dup2(bak, STDOUT_FILENO);
-// 			for(i=1;i<=numn;i++){
-// 				int coun=0;
-// 				for(coun=1;coun<=k;coun++){
-// 					int a = SAT_GetVarAsgnment(mgr, (i-1)*k+coun);
-// 					if(a==1){
-// 						res[ck++]=num[i];
-// 						break;
-// 					}else if(a==0){
-// 						continue;
-// 					}else{
-// 						fprintf(stderr,"Error: zchaff error!"); fflush(stdout);
-// 					}
-// 				}
+		result = SAT_Solve(mgr);
+	    int ck=1;
+	    if(result == SATISFIABLE) {
+	    	int *res=(int *)malloc(sizeof(int)*(numn+1));
+			int nn = SAT_NumVariables(mgr);
+			int pre=-1;
+			dup2(bak, STDOUT_FILENO);
+			for(i=1;i<=numn;i++){
+				int coun=0;
+				for(coun=1;coun<=k;coun++){
+					int a = SAT_GetVarAsgnment(mgr, (i-1)*k+coun);
+					if(a==1){
+						res[ck++]=num[i];
+						break;
+					}else if(a==0){
+						continue;
+					}else{
+						fprintf(stderr,"Error: zchaff error!"); fflush(stdout);
+					}
+				}
 				
-// 			}
-// 			qsort(res, ck, sizeof(int), cmpfunc);
-// 			for(i=0;i<ck-1;i++){
-// 				fprintf(stdout,"%d ", res[i]); fflush(stdout);
-// 			}
-// 			fprintf(stdout, "%d\n",res[ck-1]);fflush(stdout);
-// 			break;
-// 			free(res);
-// 	    }
-// 	    else {
-// 			continue;
-// 	    }
-// 	    free(c3);
-// 	    free(c);
-// 	    free(hash2);
-//     }
-// }
+			}
+			res[0]=ck;
+			arg->s=res;
+			// for(i=0;i<ck-1;i++){
+			// 	fprintf(stdout,"%d ", res[i]); fflush(stdout);
+			// }
+			// fprintf(stdout, "%d\n",res[ck-1]);fflush(stdout);
+			return NULL;
+			break;
+			free(res);
+	    }
+	    else {
+			continue;
+	    }
+	    free(c3);
+	    free(c);
+	    free(hash2);
+    }
+}
 struct node* copy(struct node* first){
 	struct node *he=first;
 	struct node *head=first;
@@ -255,8 +258,10 @@ void* approx1(void * argu){
 	he=init;
 	int max=0;
 	int id=0;
-	int *res=(int *)malloc(2*sizeof(int));
+	int *res=(int *)malloc(MAXLENGTH*sizeof(int));
 	int cres=1;
+	//fprintf(stdout,"START \n");
+	fflush(stdout);
 	while(true){
 		he=init;
 		max=0;
@@ -272,7 +277,8 @@ void* approx1(void * argu){
 			break;
 		}
 		res[cres++]=id;
-	    res=(int *)realloc(res,(cres+1)*sizeof(int));		
+		//fprintf(stdout,"s:%d ",id);fflush(stdout);
+	   // res=(int *)realloc(res,(cres+1)*sizeof(int));	V 10 E {<0,1>,<1,4>,<2,3>,<3,6>,<6,8>}	
 		//first=init;
 		if(init->index==id){
 			init=init->child;
@@ -282,8 +288,22 @@ void* approx1(void * argu){
 		while(he!=NULL){
 			int csum=0;
 			if(he->index==id){
-				first->child=he->child;
-				he=first->child;
+				if(he==init){
+					init=init->child;
+					he=init;
+					first=he;
+					// if(he==NULL) {
+					// 	res[0]=cres;
+					// 	arg->s=res;
+					// 	return NULL;
+					// }
+					// else{
+					// 	he=he->child;
+					// }
+				}else{
+					first->child=he->child;
+					he=first->child;
+				}
 			}else{
 				head=he->next;
 				fhead=he;
@@ -294,7 +314,7 @@ void* approx1(void * argu){
 						head=fhead->next;
 					}else{
 						fhead=head;
-						head=head->next;
+						head=fhead->next;
 					}
 				}
 				he->sum=he->sum-csum;
@@ -302,7 +322,13 @@ void* approx1(void * argu){
 					if(he==init){
 						init=init->child;
 						first=init;
-						he=first->child;
+						if(init==NULL) {
+							res[0]=cres;
+							arg->s=res;
+							return NULL;
+						}
+						he=first;///////
+						
 					}else{
 						first->child=he->child;
 						he=first->child;
@@ -319,6 +345,10 @@ void* approx1(void * argu){
 	}
 	res[0]=cres;
 	arg->s=res;
+	// int iii=0;
+	// for(;iii<cres;iii++){
+	// 	fprintf(stdout,"last:%d ",res[iii]);fflush(stdout);
+	// }
 	//return (void *)res;
 	//if(he!=NULL) max=
 	//int cres=0;
@@ -398,11 +428,12 @@ struct node* deletes(struct node* fr,int id1,int id2){
 	}
 	head=init;
 	fhead=init;
-	while(head->next==NULL){
+	while(head!=NULL&&head->next==NULL){
 		head=head->child;
 	}
 	init=head;
-	head=init;
+	if(init ==NULL) return NULL;
+	head=init->child;
 	fhead=init;
 	while(head!=NULL){
 		if(head->next==NULL){
@@ -424,7 +455,7 @@ void* approx2(void * argu){
 	struct node *init;
 	init=copy(first);
 	he=init;
-	int *res=(int *)malloc(3*sizeof(int));
+	int *res=(int *)malloc(MAXLENGTH*sizeof(int));
 	int cres=1;
 	while(he!=NULL){
 		head=he;
@@ -434,13 +465,19 @@ void* approx2(void * argu){
 		id2=head->next->index;
 		res[cres++]=id1;
 		res[cres++]=id2;
-    	res=(int *)realloc(res,(cres+3)*sizeof(int));	
-		init=init->next;
+			//fprintf(stdout,"d1:%d d2:%d",id1,id2);fflush(stdout);
+    	//res=(int *)realloc(res,(cres+3)*sizeof(int));	
+		init=init->child;
 		fhead=init;
 		head=init;
-		if(head==NULL) return (void*)res;
+		if(head==NULL) {
+			res[0]=cres;
+			arg->s=res;
+			return 	NULL;
+		}
+			
 		if(head->index==id2){
-			init=init->next;
+			init=init->child;
 		}else{
 			while(head!=NULL){
 				if(head->index==id2){
@@ -454,12 +491,20 @@ void* approx2(void * argu){
 			}
 		}
 		init=deletes(init,id1,id2);
-		if(init==NULL) return (void*)res;
+		if(init==NULL) 
+		{
+			res[0]=cres;
+			arg->s=res;
+			return 	NULL;
+		}
 		he=init;
 	}
 	res[0]=cres;
 	arg->s=res;
-	
+	// int iii=0;
+	// for(;iii<cres;iii++){
+	// 	fprintf(stdout,"last:%d ",res[iii]);fflush(stdout);
+	// }
 	//return (void *)res;
 }
 
@@ -515,7 +560,7 @@ int main(){
 			
 		}
 		else if (name[0] == 'E'){
-			fprintf(stdout,"1111");
+			//fprintf(stdout,"1111");
 			alloc = 0;
 			if(sizeof(int*)!=sizeof(cor)){
 				fr(cor,0);
@@ -690,10 +735,14 @@ int main(){
 				}
 
 			}
-			fprintf(stdout,"22222");
+			//fprintf(stdout,"22222");fflush(stdout);
 			if(empty==0) continue;
 			if (fault == 1) continue;
-			fprintf(stdout,"222223");
+			//fprintf(stdout,"222223");fflush(stdout);
+			struct argua4 *ar0=(struct argua4*)malloc(sizeof(struct argua4));
+			ar0->fir=first;
+			ar0->all=all;
+			ar0->s=NULL;
 			struct argua4 *ar=(struct argua4*)malloc(sizeof(struct argua4));
 			ar->fir=first;
 			ar->all=all;
@@ -704,21 +753,49 @@ int main(){
 			ar2->s=NULL;
 			//int *s1;
 			//int *s2;
-			fprintf(stdout,"22222");
+			//fprintf(stdout,"22222\n");fflush(stdout);
 			pthread_t th1,th2,th3;
+			pthread_create(&th1,NULL,&a4,ar0);
 			pthread_create(&th2,NULL,&approx1,ar);
 			pthread_create(&th3,NULL,&approx2,ar2);
+			pthread_join(th1,NULL);
 			pthread_join(th2,NULL);
 			pthread_join(th3,NULL);
+			int sum0=ar0->s[0];
 			int sum1=ar->s[0];
 			int sum2=ar2->s[0];
 			int ii=0;
-			for(ii=1;ii<sum1;ii++){
-				fprintf(stdout,"%d-",ar->s[ii]);
+			qsort(&ar0->s[1], sum0-1, sizeof(int), cmpfunc);
+			qsort(&ar->s[1], sum1-1, sizeof(int), cmpfunc);
+			qsort(&ar2->s[1], sum2-1, sizeof(int), cmpfunc);
+			if(sum0<2){
+				fprintf(stdout,"CNF-SAT-VC:\n");
+			}else{
+				fprintf(stdout,"CNF-SAT-VC: ");
+				for(ii=1;ii<sum0-1;ii++){
+					fprintf(stdout,"%d,",ar0->s[ii]);
+				}
+				fprintf(stdout,"%d\n",ar0->s[sum0-1]);
 			}
-			fprintf(stdout,"\n");
-			for(ii=1;ii<sum2;ii++){
-				fprintf(stdout,"%d-",ar2->s[ii]);
+
+			if(sum1<2){
+				fprintf(stdout,"APPROX-VC-1:\n");
+			}else{
+				fprintf(stdout,"APPROX-VC-1: ");
+				for(ii=1;ii<sum1-1;ii++){
+					fprintf(stdout,"%d,",ar->s[ii]);
+				}
+				fprintf(stdout,"%d\n",ar->s[sum1-1]);
+			}
+			
+			if(sum2<2){
+				fprintf(stdout,"APPROX-VC-2:\n");
+			}else{
+				fprintf(stdout,"APPROX-VC-2: ");
+				for(ii=1;ii<sum2-1;ii++){
+					fprintf(stdout,"%d,",ar2->s[ii]);
+				}
+				fprintf(stdout,"%d\n",ar2->s[sum2-1]);
 			}
 
 
