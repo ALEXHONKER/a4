@@ -21,11 +21,11 @@ struct argua4{
 	struct node *fir;
 	int all;
 	int *s;
-
+	clockid_t *cid;
 };
 static void pclock(char *msg,clockid_t cid){
 	struct timespec ts;
-	printf("%s ",msd);
+	printf("%s ",msg);
 	if(clock_gettime(cid,&ts)!=-1){
 		printf("%4ld.%03ld\n", ts.tv_sec, ts.tv_nsec / 1000000);
 	}
@@ -88,6 +88,7 @@ void freechildnode(struct node *f){
 	}
 }
 void* a4(void* argu){	
+	clockid_t *cid=malloc(sizeof(clockid_t));
 	struct argua4 *arg=(struct argua4*) argu;
 	struct node *first=arg->fir;
 	int all=arg->all;
@@ -202,6 +203,9 @@ void* a4(void* argu){
 			// 	fprintf(stdout,"%d ", res[i]); fflush(stdout);
 			// }
 			// fprintf(stdout, "%d\n",res[ck-1]);fflush(stdout);
+			int ts=pthread_getcpuclockid(pthread_self(),cid);
+			arg->cid=cid;
+
 			return NULL;
 			break;
 			free(res);
@@ -251,6 +255,7 @@ struct node* copy(struct node* first){
 	return init;
 }
 void* approx1(void * argu){
+	clockid_t *cid=malloc(sizeof(clockid_t));
 	struct argua4 *arg=(struct argua4 *)argu;
 	struct node *first=arg->fir;
 	struct node *he=first;
@@ -332,6 +337,8 @@ void* approx1(void * argu){
 						if(init==NULL) {
 							res[0]=cres;
 							arg->s=res;
+							int ts=pthread_getcpuclockid(pthread_self(),cid);
+							arg->cid=cid;
 							return NULL;
 						}
 						he=first;///////
@@ -352,6 +359,8 @@ void* approx1(void * argu){
 	}
 	res[0]=cres;
 	arg->s=res;
+	int ts=pthread_getcpuclockid(pthread_self(),cid);
+	arg->cid=cid;
 	// int iii=0;
 	// for(;iii<cres;iii++){
 	// 	fprintf(stdout,"last:%d ",res[iii]);fflush(stdout);
@@ -454,6 +463,7 @@ struct node* deletes(struct node* fr,int id1,int id2){
 	return init;
 }
 void* approx2(void * argu){
+	clockid_t *cid=malloc(sizeof(clockid_t));
 	struct argua4 *arg=(struct argua4 *)argu;
 	struct node *first=arg->fir;
 	struct node *he=first;
@@ -502,12 +512,16 @@ void* approx2(void * argu){
 		{
 			res[0]=cres;
 			arg->s=res;
+			int ts=pthread_getcpuclockid(pthread_self(),cid);
+							arg->cid=cid;
 			return 	NULL;
 		}
 		he=init;
 	}
 	res[0]=cres;
 	arg->s=res;
+	int ts=pthread_getcpuclockid(pthread_self(),cid);
+							arg->cid=cid;
 	// int iii=0;
 	// for(;iii<cres;iii++){
 	// 	fprintf(stdout,"last:%d ",res[iii]);fflush(stdout);
@@ -770,15 +784,19 @@ int main(){
 			pthread_create(&th2,NULL,&approx1,ar);
 			pthread_create(&th3,NULL,&approx2,ar2);
 			pthread_join(th1,NULL);
+			//int ts;
+			// ts=pthread_getcpuclockid(th1,&cid);
+			// pclock("th1: ",cid);
 			pthread_join(th2,NULL);
 			pthread_join(th3,NULL);
-			int ts;
-			ts=pthread_getcpuclockid(th1,&cid);
-			pclock("th1: ",cid);
-			ts=pthread_getcpuclockid(th2,&cid);
-			pclock("th2: ",cid);
-			ts=pthread_getcpuclockid(th3,&cid);
-			pclock("th3: ",cid);
+			
+			// ts=pthread_getcpuclockid(th2,&cid);
+			// pclock("th2: ",cid);
+			// ts=pthread_getcpuclockid(th3,&cid);
+			// pclock("th3: ",cid);
+			pclock("th1: ",*ar0->cid);
+			pclock("th2: ",*ar->cid);
+			pclock("th3: ",*ar2->cid);
 			int sum0=ar0->s[0];
 			int sum1=ar->s[0];
 			int sum2=ar2->s[0];
