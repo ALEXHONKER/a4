@@ -736,7 +736,10 @@ int main(){
 
 			}
 			//fprintf(stdout,"22222");fflush(stdout);
-			if(empty==0) continue;
+			if(empty==0){
+				fprintf(stdout,"CNF-SAT-VC:\nAPPROX-VC-1:\nAPPROX-VC-2:\n");
+				continue;
+			}
 			if (fault == 1) continue;
 			//fprintf(stdout,"222223");fflush(stdout);
 			struct argua4 *ar0=(struct argua4*)malloc(sizeof(struct argua4));
@@ -797,7 +800,7 @@ int main(){
 				}
 				fprintf(stdout,"%d\n",ar2->s[sum2-1]);
 			}
-
+			fflush(stdout);
 
 
 		}
