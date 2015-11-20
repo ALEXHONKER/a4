@@ -5,6 +5,7 @@
 #include <pthread.h>
 #include "SAT.h"
 #include <unistd.h>
+#include <time.h>
 #define MAXLENGTH 5000000 
 struct node{
 	int index;  //unique index of the node
@@ -22,7 +23,13 @@ struct argua4{
 	int *s;
 
 };
-
+static void pclock(char *msg,clockid_t cid){
+	struct timespec ts;
+	printf("%s ",msd);
+	if(clock_gettime(cid,&ts)!=-1){
+		printf("%4ld.%03ld\n", ts.tv_sec, ts.tv_nsec / 1000000);
+	}
+}
 int cmpfunc (const void * a, const void * b)
 {
    return ( *(int*)a - *(int*)b );
@@ -754,6 +761,7 @@ int main(){
 			ar2->fir=first;
 			ar2->all=all;
 			ar2->s=NULL;
+			clockid_t cid;
 			//int *s1;
 			//int *s2;
 			//fprintf(stdout,"22222\n");fflush(stdout);
@@ -764,6 +772,13 @@ int main(){
 			pthread_join(th1,NULL);
 			pthread_join(th2,NULL);
 			pthread_join(th3,NULL);
+			int ts;
+			ts=pthread_getcpuclockid(th1,&cid);
+			pclock("th1: ",cid);
+			ts=pthread_getcpuclockid(th2,&cid);
+			pclock("th2: ",cid);
+			ts=pthread_getcpuclockid(th3,&cid);
+			pclock("th3: ",cid);
 			int sum0=ar0->s[0];
 			int sum1=ar->s[0];
 			int sum2=ar2->s[0];
