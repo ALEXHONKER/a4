@@ -88,7 +88,7 @@ void freechildnode(struct node *f){
 	}
 }
 void* a4(void* argu){	
-	clockid_t *cid=malloc(sizeof(clockid_t));
+	clockid_t *cid=(clockid_t*)malloc(sizeof(clockid_t));
 	struct argua4 *arg=(struct argua4*) argu;
 	struct node *first=arg->fir;
 	int all=arg->all;
@@ -255,7 +255,7 @@ struct node* copy(struct node* first){
 	return init;
 }
 void* approx1(void * argu){
-	clockid_t *cid=malloc(sizeof(clockid_t));
+	clockid_t *cid=(clockid_t*)malloc(sizeof(clockid_t));
 	struct argua4 *arg=(struct argua4 *)argu;
 	struct node *first=arg->fir;
 	struct node *he=first;
@@ -463,7 +463,7 @@ struct node* deletes(struct node* fr,int id1,int id2){
 	return init;
 }
 void* approx2(void * argu){
-	clockid_t *cid=malloc(sizeof(clockid_t));
+	clockid_t *cid=(clockid_t*)malloc(sizeof(clockid_t));
 	struct argua4 *arg=(struct argua4 *)argu;
 	struct node *first=arg->fir;
 	struct node *he=first;
