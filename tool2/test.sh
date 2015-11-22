@@ -1,5 +1,5 @@
 #!/bin/bash
-int=25
+int=5
 while(($int <= 50))
 do
 	i=0
