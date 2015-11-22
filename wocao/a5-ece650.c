@@ -17,17 +17,21 @@ struct node{
 	struct node *child;//next child
 	struct node *next; //next node
 };
+clockid_t cid2;
+clockid_t cid3;
 struct argua4{
 	struct node *fir;
 	int all;
 	int *s;
-	clockid_t *cid;
+	clockid_t cid;
+	long us;
 };
 static void pclock(char *msg,clockid_t cid){
 	struct timespec ts;
 	//printf(,msg);
 	if(clock_gettime(cid,&ts)!=-1){
-		printf("%s s:%4ld  nanos:%ld\n",msg, ts.tv_sec, ts.tv_nsec);
+		//printf("%s s:%ld  us:%ld\n",msg, ts.tv_sec*1000000, ts.tv_nsec/1000);
+		printf("%s us:%ld\n",msg, ts.tv_sec*1000000+ts.tv_nsec/1000);
 		fflush(stdout);
 	}
 }
@@ -205,8 +209,12 @@ void* a4(void* argu){
 			// }
 			// fprintf(stdout, "%d\n",res[ck-1]);fflush(stdout);
 			int ts=pthread_getcpuclockid(pthread_self(),cid);
-			arg->cid=cid;
-			pclock("th1: ",*cid);
+			//arg->cid=*cid;
+			//pclock("th1: ",*cid);
+			struct timespec tss;
+			if(clock_gettime(*cid,&tss)!=-1){
+				arg->us=tss.tv_sec*1000000+tss.tv_nsec/1000;
+			}
 			return NULL;
 			break;
 			free(res);
@@ -305,14 +313,6 @@ void* approx1(void * argu){
 					init=init->child;
 					he=init;
 					first=he;
-					// if(he==NULL) {
-					// 	res[0]=cres;
-					// 	arg->s=res;
-					// 	return NULL;
-					// }
-					// else{
-					// 	he=he->child;
-					// }
 				}else{
 					first->child=he->child;
 					he=first->child;
@@ -339,8 +339,13 @@ void* approx1(void * argu){
 							res[0]=cres;
 							arg->s=res;
 							int ts=pthread_getcpuclockid(pthread_self(),cid);
-							arg->cid=cid;
-							pclock("th2: ",*cid);
+							//cid2=*cid;
+							//arg->cid=*cid;
+							struct timespec tss;
+							if(clock_gettime(*cid,&tss)!=-1){
+								arg->us=tss.tv_sec*1000000+tss.tv_nsec/1000;
+							}
+							//pclock("th2: ",*cid);
 							return NULL;
 						}
 						he=first;///////
@@ -362,69 +367,14 @@ void* approx1(void * argu){
 	res[0]=cres;
 	arg->s=res;
 	int ts=pthread_getcpuclockid(pthread_self(),cid);
-	arg->cid=cid;
-	pclock("th2: ",*cid);
+	//arg->cid=*cid;
+	//cid2=*cid;
+	struct timespec tss;
+	if(clock_gettime(*cid,&tss)!=-1){
+		arg->us=tss.tv_sec*1000000+tss.tv_nsec/1000;
+	}
+	//pclock("th2: ",*cid);
 	return NULL;
-	// int iii=0;
-	// for(;iii<cres;iii++){
-	// 	fprintf(stdout,"last:%d ",res[iii]);fflush(stdout);
-	// }
-	//return (void *)res;
-	//if(he!=NULL) max=
-	//int cres=0;
-	//int *res=malloc(sizeof(int));
-	// while(true){
-	// 	he=first;
-	// 	max=0;
-	// 	index=-1;
-	// 	while(he!=NULL){
-	// 		if(he->sum!=0&&max<he->sum) {
-	// 			max=he->sum;
-	// 			index=he->index;
-	// 		}
-	// 		he=he->child;
-	// 	}
-	// 	if(max==0) break;
-	// 	res[cres++]=index;
-	// 	res=remalloc(res,(cres+1)*sizeof(int));
-	// 	struct node *test=first;
-	// 	struct node *star=first;
-	// 	struct node *fa=first;
-
-
-	// 	while(test!=NULL){
-	// 		head=test;
-	// 		he=test;
-	// 		star=test;
-	// 		struct node* fa=he;
-	// 		if(head->kill2>0){
-	// 			int su=0;
-	// 			while(head!=NULL){
-	// 				if(head->kill2>0&&head->index==index){
-	// 					su++;
-	// 					head->kill2=0;
-	// 					if(head!=he){
-	// 						if(fa!=NULL){
-	// 							fa->next=head->next;
-	// 						}
-	// 					}
-	// 				}
-	// 				fa=head;
-	// 				head=head->next;
-	// 			}
-	// 			star->sum=star->sum-su;
-	// 			if(star->sum<=0) {
-	// 				star->kill2=0;
-	// 			}
-	// 		}
-	// 		fa=head;
-	// 		head=head->child;
-	// 	}
-
-	// }
-	
-
-
 }
 struct node* deletes(struct node* fr,int id1,int id2){
 	struct node *head=fr;
@@ -495,8 +445,16 @@ void* approx2(void * argu){
 			res[0]=cres;
 			arg->s=res;
 			int ts=pthread_getcpuclockid(pthread_self(),cid);
-			arg->cid=cid;
-			pclock("th3: ",*cid);
+			//arg->cid=*cid;
+			struct timespec tss;
+			//printf(,msg);
+			if(clock_gettime(*cid,&tss)!=-1){
+				//printf("%s s:%ld  us:%ld\n",msg, ts.tv_sec*1000000, ts.tv_nsec/1000);
+				//printf("%s us:%ld\n",msg, ts.tv_sec*1000000+ts.tv_nsec/1000);
+				//fflush(stdout);
+				arg->us=tss.tv_sec*1000000+tss.tv_nsec/1000;
+			}
+			//pclock("th3: ",*cid);
 			return 	NULL;
 		}
 			
@@ -520,8 +478,17 @@ void* approx2(void * argu){
 			res[0]=cres;
 			arg->s=res;
 			int ts=pthread_getcpuclockid(pthread_self(),cid);
-			arg->cid=cid;
-			pclock("th3: ",*cid);
+			//arg->cid=*cid;
+			struct timespec tss;
+			//printf(,msg);
+			if(clock_gettime(*cid,&tss)!=-1){
+				//printf("%s s:%ld  us:%ld\n",msg, ts.tv_sec*1000000, ts.tv_nsec/1000);
+				//printf("%s us:%ld\n",msg, ts.tv_sec*1000000+ts.tv_nsec/1000);
+				//fflush(stdout);
+				arg->us=tss.tv_sec*1000000+tss.tv_nsec/1000;
+			}
+			//pclock("th3: ",*cid);
+			//cid3=*cid;
 			return 	NULL;
 		}
 		he=init;
@@ -529,8 +496,17 @@ void* approx2(void * argu){
 	res[0]=cres;
 	arg->s=res;
 	int ts=pthread_getcpuclockid(pthread_self(),cid);
-	arg->cid=cid;
-	pclock("th3: ",*cid);
+	arg->cid=*cid;
+	struct timespec tss;
+	//printf(,msg);
+	if(clock_gettime(*cid,&tss)!=-1){
+		//printf("%s s:%ld  us:%ld\n",msg, ts.tv_sec*1000000, ts.tv_nsec/1000);
+		//printf("%s us:%ld\n",msg, ts.tv_sec*1000000+ts.tv_nsec/1000);
+		//fflush(stdout);
+		arg->us=tss.tv_sec*1000000+tss.tv_nsec/1000;
+	}
+	//pclock("th3: ",*cid);
+	//cid3=*cid;
 	return NULL;
 	// int iii=0;
 	// for(;iii<cres;iii++){
@@ -651,9 +627,6 @@ int main(){
 					pointer = 0;
 					cor[nume][1] = getint(x);
 					if(cor[nume][0]==cor[nume][1]){
-						//fprintf(stdout, "Error: Wrong point\n");
-						//fflush(stdout);
-						//fault = 1;
 						nume++;
 
 						continue;
@@ -785,29 +758,39 @@ int main(){
 			ar2->fir=first;
 			ar2->all=all;
 			ar2->s=NULL;
-			clockid_t cid;
+			//clockid_t cid;
 			//int *s1;
 			//int *s2;
 			//fprintf(stdout,"22222\n");fflush(stdout);
 			pthread_t th1,th2,th3;
-			//pthread_create(&th1,NULL,&a4,ar0);
+			
 			pthread_create(&th2,NULL,&approx1,ar);
 			pthread_create(&th3,NULL,&approx2,ar2);
-			//pthread_join(th1,NULL);
+			
+			//pthread_create(&th1,NULL,&a4,ar0);
 			pthread_join(th2,NULL);
 			pthread_join(th3,NULL);
-			//pclock("th1: ",*(ar0->cid));
-			//pclock("th2: ",*(ar->cid));
-			fflush(stdout);
-			//pclock("th3: ",*(ar2->cid));
-			fflush(stdout);
+			//pthread_join(th1,NULL);
+			
+			
+			
+			//fflush(stdout);
 			//int sum0=ar0->s[0];
 			int sum1=ar->s[0];
 			int sum2=ar2->s[0];
-			int ii=0;
-			//qsort(&ar0->s[1], sum0-1, sizeof(int), cmpfunc);
-			qsort(&ar->s[1], sum1-1, sizeof(int), cmpfunc);
-			qsort(&ar2->s[1], sum2-1, sizeof(int), cmpfunc);
+			//pclock("th1: ",*(ar0->cid));
+			//pclock("th2-: ",ar->cid);
+			//fprintf(stdout,"%d,%d\n",ar0->us,sum0-1);
+			fprintf(stdout,"%d,%d\n",ar->us,sum1-1);
+			fprintf(stdout,"%d,%d\n",ar2->us,sum2-1);
+			//pclock("th3-: ",ar2->cid);
+			fflush(stdout);
+
+			// int ii=0;
+			// qsort(&ar0->s[1], sum0-1, sizeof(int), cmpfunc);
+			// qsort(&ar->s[1], sum1-1, sizeof(int), cmpfunc);
+			// qsort(&ar2->s[1], sum2-1, sizeof(int), cmpfunc);
+			
 			// if(sum0<2){
 			// 	fprintf(stdout,"CNF-SAT-VC:\n");
 			// }else{
@@ -818,25 +801,25 @@ int main(){
 			// 	fprintf(stdout,"%d\n",ar0->s[sum0-1]);
 			// }
 
-			if(sum1<2){
-				fprintf(stdout,"APPROX-VC-1:\n");
-			}else{
-				fprintf(stdout,"APPROX-VC-1: ");
-				for(ii=1;ii<sum1-1;ii++){
-					fprintf(stdout,"%d,",ar->s[ii]);
-				}
-				fprintf(stdout,"%d\n",ar->s[sum1-1]);
-			}
+			// if(sum1<2){
+			// 	fprintf(stdout,"APPROX-VC-1:\n");
+			// }else{
+			// 	fprintf(stdout,"APPROX-VC-1: ");
+			// 	for(ii=1;ii<sum1-1;ii++){
+			// 		fprintf(stdout,"%d,",ar->s[ii]);
+			// 	}
+			// 	fprintf(stdout,"%d\n",ar->s[sum1-1]);
+			// }
 			
-			if(sum2<2){
-				fprintf(stdout,"APPROX-VC-2:\n");
-			}else{
-				fprintf(stdout,"APPROX-VC-2: ");
-				for(ii=1;ii<sum2-1;ii++){
-					fprintf(stdout,"%d,",ar2->s[ii]);
-				}
-				fprintf(stdout,"%d\n",ar2->s[sum2-1]);
-			}
+			// if(sum2<2){
+			// 	fprintf(stdout,"APPROX-VC-2:\n");
+			// }else{
+			// 	fprintf(stdout,"APPROX-VC-2: ");
+			// 	for(ii=1;ii<sum2-1;ii++){
+			// 		fprintf(stdout,"%d,",ar2->s[ii]);
+			// 	}
+			// 	fprintf(stdout,"%d\n",ar2->s[sum2-1]);
+			// }
 			fflush(stdout);
 
 
